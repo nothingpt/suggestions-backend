@@ -109,7 +109,7 @@ const resolvers = {
         return null;
       }
 
-      const token = jwt.sign({ userId: user._id }, "jwtsecret123");
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
       res.cookie("token", token, {
         httpOnly: true,

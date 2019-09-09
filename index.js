@@ -5,6 +5,7 @@ const session = require("express-session");
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+require('dotenv').config();
 
 mongoose.Promise = global.Promise;
 const resolvers = require("./resolvers/resolvers");
@@ -24,7 +25,7 @@ app.use((req, res, next) => {
   const { token } = req.cookies;
 
   if (token) {
-    const { userId } = jwt.verify(token,  'jwtsecret123');
+    const { userId } = jwt.verify(token,  process.env.JWT_SECRET);
     // console.log(userId);
     req.userId = userId;
   }
@@ -33,15 +34,10 @@ app.use((req, res, next) => {
 })
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL,
   credentials: true,
   enablePreflight: true
 }));
-
-app.use((req, res, next) => {
-  // console.log(req.headers);
-  next()
-})
 
 app.use(
   session({
@@ -51,7 +47,7 @@ app.use(
   })
 );
 
-const url = "mongodb://localhost:27017/suggestionsDB";
+const url = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 // ('Access-Control-Allow-Origin: *');
 mongoose.connect(url, { useNewUrlParser: true });
 mongoose.connection.once("open", () =>
